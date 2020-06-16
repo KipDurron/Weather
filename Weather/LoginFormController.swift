@@ -16,27 +16,39 @@ class LoginFormController: UIViewController {
     @IBOutlet weak var loginInput: UITextField!
     
     @IBOutlet weak var passwordInput: UITextField!
-    //    @IBAction func scrollTapped(_ sender: Any) {
-//        hideKeyboard()
-//    }
     
-    @IBAction func loginButtonPresed(_ sender: Any) {
-
-        if let login = loginInput.text, let password = passwordInput.text{
-            // Проверяем, верны ли они
-            print(login)
-            print(password)
-            if login == "admin" && password == "admin" {
-                print("успешная авторизация")
-            } else {
-                print("неуспешная авторизация")
-            }
+    func checkUserData() -> Bool{
+        guard let login = self.loginInput.text, let password = self.passwordInput.text else {
+            return false
+        }
+        if login == "admin" && password == "admin" {
+            return true
+        } else {
+            return false
         }
     }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        guard checkUserData() else {
+            showLoginError()
+            return false
+        }
+        return true
+    }
 
+    func showLoginError() {
+        // Создаем контроллер
+        let alert = UIAlertController(title: "Ошибка", message: "Введены не верные данные(верные: admin, admin)", preferredStyle: .alert)
+        // Создаем кнопку для UIAlertController
+        let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        // Добавляем кнопку на UIAlertController
+        alert.addAction(action)
+        // Показываем UIAlertController
+        present(alert, animated: true, completion: nil)
+    }
+    
     @objc func keyboardWillShow(notification: Notification) {
-         guard let kbSize = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-         
+        guard let kbSize = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
         self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: kbSize.height, right: 0)
      }
      
